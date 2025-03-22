@@ -1,1 +1,2 @@
-# CS_690_Medicine_Tracker_Project
+# CS 690 Medicine Tracker Project
+Created by Erica Wolf
