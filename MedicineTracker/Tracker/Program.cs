@@ -52,7 +52,7 @@ class Program
 
                 switch (add_med_choice)
                 {
-                    case "1. Myself":
+                    case "1. Myself.":
                         AnsiConsole.WriteLine("You chose to add a medication for yourself.");
                         var medicine_name = AnsiConsole.Prompt(
                             new TextPrompt<string>("Please enter the name of the medication: ")
@@ -63,13 +63,22 @@ class Program
                         var frequency = AnsiConsole.Prompt(
                             new TextPrompt<string>("Please enter the frequency of the medication: ")
                         );
+                        using (StreamWriter sw = File.CreateText(filePath))
+                        {
+                            sw.WriteLine("Medicine and Dosage Information for "+ name);
+                            sw.WriteLine($"Medicine: {medicine_name}");
+                            sw.WriteLine($"Dosage: {dosage}");
+                            sw.WriteLine($"Frequency: {frequency}");
+                        }
                         break;
-                    case "2. Family member or pet":
+
+                    case "2. Family member or pet.":
                         AnsiConsole.WriteLine("You chose to add a medication for a family member or pet.");
                         var family_member = AnsiConsole.Prompt(
                             new TextPrompt<string>("Please enter the name of the family member or pet: ")
                         );
                         break;
+
                     default:
                         AnsiConsole.WriteLine("Invalid choice. Please try again.");
                         break;
