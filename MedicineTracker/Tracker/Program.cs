@@ -12,6 +12,7 @@ class Program
     {
         // Set the console title
         Console.WriteLine("Hello!");
+        AnsiConsole.WriteLine("\n");
         Console.WriteLine("Please input your name: ");
         string name = Console.ReadLine() ?? "User";
         AnsiConsole.Write(new FigletText($"Welcome, {name}, to the Medicine Tracker!")
@@ -19,8 +20,11 @@ class Program
             .Color(Color.Purple_1));
 
         // Tell user about the application
+        AnsiConsole.WriteLine("\n");
         AnsiConsole.WriteLine("This is a medicine tracker that allows you to track your medicines and their dosages.");
+        AnsiConsole.WriteLine("\n");
         AnsiConsole.WriteLine("You can add, remove, and view your medicines and their dosages.");
+        AnsiConsole.WriteLine("\n");
         AnsiConsole.WriteLine("You can also set reminders for your medicines and their dosages, and view your information in a table.");
         AnsiConsole.WriteLine("\n");
 
