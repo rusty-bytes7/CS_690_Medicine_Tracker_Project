@@ -3,9 +3,9 @@
 using Spectre.Console;
 using System.IO;  // include the System.IO namespace
 using StreamWriter = System.IO.StreamWriter; // include the StreamWriter class
-using System.Net;
-using System.Net.Mail; 
 
+//This program needs to be broken out into smaller classes
+//and methods to be more readable and maintainable.
 class Program
 {
     static void Main(string[] args)
@@ -20,7 +20,6 @@ class Program
             .Color(Color.Purple_1));
 
         // Tell user about the application
-        AnsiConsole.WriteLine("\n");
         AnsiConsole.WriteLine("This is a medicine tracker that allows you to track your medicines and their dosages.");
         AnsiConsole.WriteLine("\n");
         AnsiConsole.WriteLine("You can add, remove, and view your medicines and their dosages.");
@@ -59,29 +58,28 @@ class Program
                         }
                     }
 
+                    //Add medication
                     switch (add_med_choice)
                     {
                         case "1. Myself.":
                             AnsiConsole.WriteLine("You chose to add a medication for yourself.");
                             var medicine_name = AnsiConsole.Prompt(
                                 new TextPrompt<string>("Please enter the name of the medication: ")
-                            );
+                            ).ToLower();
                             var dosage = AnsiConsole.Prompt(
                                 new TextPrompt<string>("Please enter the dosage of the medication: ")
-                            );
+                            ).ToLower();
                             var frequency = AnsiConsole.Prompt(
                                 new TextPrompt<string>("Please enter the frequency of the medication: ")
-                            );
+                            ).ToLower();
                             using (StreamWriter textfile = File.AppendText(filePath))
                             {
                                 textfile.WriteLine("\n");
-                                textfile.WriteLine("Medicine and Dosage Information for " + name);
-                                textfile.WriteLine($"Medicine: {medicine_name}");
-                                textfile.WriteLine($"Dosage: {dosage}");
-                                textfile.WriteLine($"Frequency: {frequency}");
+                                textfile.WriteLine($"{name}, {medicine_name}, {dosage}, {frequency}");
                             }
                             break;
 
+                        //Add for family member or pet
                         case "2. Family member or pet.":
                             AnsiConsole.WriteLine("You chose to add a medication for a family member or pet.");
                             var family_member = AnsiConsole.Prompt(
@@ -99,10 +97,7 @@ class Program
                             using (StreamWriter textfile = File.AppendText(filePath))
                             {
                                 textfile.WriteLine("\n");
-                                textfile.WriteLine("Medicine and Dosage Information for " + family_member);
-                                textfile.WriteLine($"Medicine: {fm_medicine_name}");
-                                textfile.WriteLine($"Dosage: {fm_dosage}");
-                                textfile.WriteLine($"Frequency: {fm_frequency}");
+                                textfile.WriteLine($"{family_member}, {fm_medicine_name}, {fm_dosage}, {fm_frequency}");
                             }
                             break;
 
@@ -112,6 +107,7 @@ class Program
                     }
                     break;
 
+                //Add reminder for medication
                 case "2. Add a reminder for a medication.":
                     AnsiConsole.WriteLine("You chose to add a reminder for a medication.");
                     string filePathreminders = "reminders.csv";
@@ -120,7 +116,6 @@ class Program
                         using (StreamWriter textfile = File.CreateText(filePathreminders))
                         {
                             textfile.WriteLine("Medication Reminders");
-                            textfile.WriteLine("====================");
                         }
                     }
                     else
@@ -133,21 +128,20 @@ class Program
                         new TextPrompt<string>("Please enter the name of medication you want to add a reminder for: ")
                     );
                     var reminder_time = AnsiConsole.Prompt(
-                        new TextPrompt<string>("Please enter the time you want to be reminded (in HH:MM format): ")
+                        new TextPrompt<string>("Please enter the time you want to be reminded (in HHMM format): ")
                     );
 
                     using (StreamWriter textfile = File.AppendText(filePathreminders))
                     {
                         textfile.WriteLine("\n");
-                        textfile.WriteLine("Medication Reminders for " + name);
-                        textfile.WriteLine($"Medication: {med_name_reminder}");
-                        textfile.WriteLine($"Reminder Time: {reminder_time}");
+                        textfile.WriteLine($"{name}, {med_name_reminder}, {reminder_time}");
                     }
                     AnsiConsole.WriteLine($"Reminder for {med_name_reminder} at {reminder_time} has been added.");
                     break;
                 // Suggestion: Add a feature to send email reminders
                 
-
+                //Remove or edit a medicine and dosage
+                //Suggestion: Implement editing functionality
                 case "3. Remove or edit a medicine and dosage.":
                     AnsiConsole.WriteLine("You chose to remove or edit a medicine and dosage.");
                     string filePathremove = "medicines.csv";
@@ -158,8 +152,9 @@ class Program
                     else
                     {
                         var remove_medicine_name = AnsiConsole.Prompt(
-                            new TextPrompt<string>("Please enter the name of the medication you want to remove: ")
-                        );
+                            new TextPrompt<string>("Please enter the name of the medication you want to remove (note: editing is not implemented at this time): ")
+                        ).ToLower();
+                
                         var lines = File.ReadAllLines(filePathremove);
                         using (StreamWriter textfile = new StreamWriter(filePathremove))
                         {
@@ -174,6 +169,8 @@ class Program
                         AnsiConsole.WriteLine($"Medicine {remove_medicine_name} has been removed.");
                     }
                     break;
+
+                //View medicines and dosages
 
                 case "4. View medicines and dosages.":
                     AnsiConsole.WriteLine("You chose to view medicines and dosages.");
@@ -193,6 +190,7 @@ class Program
                     }
                     break;
 
+                //View reminders
                 case "5. View reminders.":
                     AnsiConsole.WriteLine("You chose to view reminders.");
                     string filePathreminder = "reminders.csv";
@@ -211,8 +209,10 @@ class Program
                     }
                     break;
 
+                //View all information in a table- note: this feature is not totally implemented yet
+
                 case "6. View all information in a table.":
-                    AnsiConsole.WriteLine("You chose to view all information in a table.");
+                    AnsiConsole.WriteLine("You chose to view all information in a table. Note, this feature is not fully implemented yet.");
                     var table = new Table();
                     table.Border(TableBorder.Rounded);
                     table.AddColumn("Name");
@@ -222,12 +222,6 @@ class Program
                     table.AddColumn("Reminder Time");
 
                     StreamReader sr = new StreamReader("medicines.csv");
-                    var info = sr.ReadLine();
-                    while (info != null)
-                    {
-                        info = sr.ReadLine();
-                    }
-                    sr.Close();
 
                     AnsiConsole.Write(table);
                     break;
