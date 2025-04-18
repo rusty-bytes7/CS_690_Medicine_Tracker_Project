@@ -1,43 +1,63 @@
 ﻿namespace Tracker;
 
 using Spectre.Console;
-using System.IO;  // include the System.IO namespace
-using StreamWriter = System.IO.StreamWriter; // include the StreamWriter class
+using System.IO; 
+using StreamWriter = System.IO.StreamWriter; 
 
-//This program needs to be broken out into smaller classes
-//and methods to be more readable and maintainable.
 class Program
 {
     static void Main(string[] args)
     {
-        // Set the console title
-        Console.WriteLine("Hello!");
-        AnsiConsole.WriteLine("\n");
-        Console.WriteLine("Please input your name: ");
+        //Set the console title
+        AnsiConsole.MarkupLine("[italic bold cyan]Hello![/]");
+        AnsiConsole.MarkupLine("[bold purple_1]Please input your name: [/]");
         string name = Console.ReadLine() ?? "User";
-        AnsiConsole.Write(new FigletText($"Welcome, {name}, to the Medicine Tracker!")
-            .Centered()
-            .Color(Color.Purple_1));
+        AnsiConsole.Write(
+            new FigletText("Welcome,")
+                .Centered()
+                .Color(Color.Purple_1)
+        );
 
-        // Tell user about the application
-        AnsiConsole.WriteLine("This is a medicine tracker that allows you to track your medicines and their dosages.");
+        AnsiConsole.Write(
+            new FigletText(name)
+                .Centered()
+                .Color(Color.Green)
+        );
+
+        AnsiConsole.Write(
+            new FigletText("to the Medicine Tracker!")
+                .Centered()
+                .Color(Color.Magenta2)
+        );
+
+        //Tell user about the application
+        AnsiConsole.MarkupLine("[bold Magenta3_2]This is a medicine tracker that allows you to track your medicines and their dosages.[/]");
         AnsiConsole.WriteLine("\n");
-        AnsiConsole.WriteLine("You can add, remove, and view your medicines and their dosages.");
+        AnsiConsole.MarkupLine("[bold magenta3_2]You can add, remove, and view your medicines and their dosages.[/]");
         AnsiConsole.WriteLine("\n");
-        AnsiConsole.WriteLine("You can also set reminders for your medicines and their dosages, and view your information in a table.");
+        AnsiConsole.MarkupLine("[bold magenta3_2]You can also set reminders for your medicines and their dosages, and view your information in tables.[/]");
         AnsiConsole.WriteLine("\n");
 
-        // Prompt the user for their initial choice
+        //prompt the user for their initial choice
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("What would you like to do?")
-                .AddChoices(new[] { "1. Add a medicine and dosage.", "2. Add a reminder for a medication.", "3. Remove or edit a medicine and dosage.", "4. View medicines and dosages.", "5. View reminders.", "6. View all information in a table.", "7. Exit" })
+                .AddChoices(new[] 
+                { 
+                    "1. Add a medicine and dosage.", 
+                    "2. Add a reminder for a medication.", 
+                    "3. Remove or edit a medicine and dosage.", 
+                    "4. View medicines and dosages.", 
+                    "5. View reminders.", 
+                    "6. View all information in tables.", 
+                    "7. Exit" 
+                })
         );
 
         string medicineFilePath = "medicinelist.csv";
         string reminderFilePath = "reminderlist.csv";
 
-        //initialize the tracker
+        // Initialize the tracker
         var tracker = new Tracker(medicineFilePath);
 
         while (choice != "7. Exit") // Loop until user chooses to exit
@@ -52,16 +72,11 @@ class Program
                             .Title("Who do you want to add a medication for?")
                             .AddChoices(new[] { "1. Myself.", "2. Family member or pet." })
                     );
-                    AnsiConsole.WriteLine(add_med_choice);
-
-                    // Create a blank file to store the medicine and dosage information
-                    //Tracker class
-                    string filePath = "medicinelist.csv";
 
                     // Declare addtracker outside the switch statement
-                    var addtracker = new Tracker(filePath);
+                    var addtracker = new Tracker(medicineFilePath);
 
-                    //Add medication
+                    // Add medication
                     switch (add_med_choice)
                     {
                         case "1. Myself.":
@@ -76,15 +91,13 @@ class Program
                                 new TextPrompt<string>("Please enter the frequency of the medication: ")
                             ).ToLower();
 
-                            //Create a new medicine object
+                            // Create a new medicine object
                             var medicine = new Medicine(medicine_name, dosage, frequency);
-                            //Write the medicine information to the file
-                            addtracker.AddMedicine(name, medicine.Name, medicine.Dosage, medicine.Frequency);
+                            tracker.AddMedicine(name, medicine.Name, medicine.Dosage, medicine.Frequency);
 
                             AnsiConsole.WriteLine($"Medicine {medicine.Name} has been added for {name}.");
                             break;
 
-                        //Add for family member or pet
                         case "2. Family member or pet.":
                             AnsiConsole.WriteLine("You chose to add a medication for a family member or pet.");
                             var family_member = AnsiConsole.Prompt(
@@ -92,16 +105,16 @@ class Program
                             );
                             var fm_medicine_name = AnsiConsole.Prompt(
                                 new TextPrompt<string>("Please enter the name of the medication: ")
-                            );
+                            ).ToLower();
                             var fm_dosage = AnsiConsole.Prompt(
                                 new TextPrompt<string>("Please enter the dosage of the medication: ")
-                            );
+                            ).ToLower();
                             var fm_frequency = AnsiConsole.Prompt(
                                 new TextPrompt<string>("Please enter the frequency of the medication: ")
-                            );
-                             //Create a new medicine object
+                            ).ToLower();
+
+                            // Create a new medicine object
                             var fam_medicine = new Medicine(fm_medicine_name, fm_dosage, fm_frequency);
-                            //Write the medicine information to the file
                             addtracker.AddMedicine(family_member, fam_medicine.Name, fam_medicine.Dosage, fam_medicine.Frequency);
 
                             AnsiConsole.WriteLine($"Medicine {fam_medicine.Name} has been added for {family_member}.");
@@ -113,23 +126,16 @@ class Program
                     }
                     break;
 
-                //Add reminder for medication
                 case "2. Add a reminder for a medication.":
                     AnsiConsole.WriteLine("You chose to add a reminder for a medication.");
-                    string filePathreminders = "reminderlist.csv";
-                    if (!File.Exists(filePathreminders))
+                    if (!File.Exists(reminderFilePath))
                     {
-                        using (StreamWriter textfile = File.CreateText(filePathreminders))
+                        using (StreamWriter textfile = File.CreateText(reminderFilePath))
                         {
                             textfile.WriteLine("Medication Reminders");
                         }
                     }
-                    else
-                    {
-                        AnsiConsole.WriteLine("File already exists.");
-                    }
 
-                    //Suggestion: Prompt user for choice from medications they have already entered
                     var med_name_reminder = AnsiConsole.Prompt(
                         new TextPrompt<string>("Please enter the name of medication you want to add a reminder for: ")
                     );
@@ -137,57 +143,55 @@ class Program
                         new TextPrompt<string>("Please enter the time you want to be reminded (in HHMM format): ")
                     );
 
-                    using (StreamWriter textfile = File.AppendText(filePathreminders))
-                    {
-                        textfile.WriteLine("\n");
-                        textfile.WriteLine($"{name}, {med_name_reminder}, {reminder_time}");
-                    }
+                    var addreminder = new Reminder(med_name_reminder, reminder_time);
+                    addreminder.AddReminder(med_name_reminder, reminder_time);
+
                     AnsiConsole.WriteLine($"Reminder for {med_name_reminder} at {reminder_time} has been added.");
                     break;
-                // Suggestion: Add a feature to send email reminders
-                
-                //Remove or edit a medicine and dosage
+
                 case "3. Remove or edit a medicine and dosage.":
                     AnsiConsole.WriteLine("You chose to remove or edit a medicine and dosage.");
+                    var remove_edit_choice = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                            .Title("What do you want to do?")
+                            .AddChoices(new[] { "1. Remove a medicine.", "2. Edit a medicine." })
+                    );
 
-                    // Initialize the tracker variable
-                    string filePathRemove = "medicinelist.csv";
+                    switch (remove_edit_choice)
+                    {
+                        case "1. Remove a medicine.":
+                            tracker.RemoveMedicine(name);
+                            break;
 
-                    var remove_medicine_name = AnsiConsole.Prompt(
-                        new TextPrompt<string>("Please enter the name of the medication you want to remove (note: editing is not implemented at this time): ")
-                    ).ToLower();
+                        case "2. Edit a medicine.":
+                            tracker.EditMedicine(name);
+                            break;
 
-                    tracker.RemoveMedicine(remove_medicine_name);
+                        default:
+                            AnsiConsole.WriteLine("Invalid choice. Please try again.");
+                            break;
+                    }
                     break;
-
-                //View medicines and dosages
 
                 case "4. View medicines and dosages.":
                     AnsiConsole.WriteLine("You chose to view medicines and dosages.");
                     tracker.ViewMedicines();
                     break;
 
-                //View reminders
                 case "5. View reminders.":
                     AnsiConsole.WriteLine("You chose to view reminders.");
-                    var reminder = new Reminder(name, reminderFilePath);
+                    var reminder = new Reminder("med_name", "reminder_time");
                     reminder.ViewReminders();
                     break;
 
-                //View all information in a table- note: this feature is not totally implemented yet
-
-                case "6. View all information in a table.":
-                    AnsiConsole.WriteLine("You chose to view all information in a table. Note, this feature is not fully implemented yet.");
-                    var table = new Table();
-                    table.Border(TableBorder.Rounded);
-                    table.AddColumn("Name");
-                    table.AddColumn("Medicine");
-                    table.AddColumn("Dosage");
-                    table.AddColumn("Frequency");
-                    table.AddColumn("Reminder Time");
-
-
-                    AnsiConsole.Write(table);
+                case "6. View all information in tables.":
+                    AnsiConsole.WriteLine("You chose to view all information in a tables.");
+                    var tableMaker = new TableMaker(medicineFilePath);
+                    var table = tableMaker.CreateTable(); 
+                    AnsiConsole.Write(table); 
+                    var tableMakerReminder = new TableMaker(reminderFilePath);
+                    var reminderTable = tableMakerReminder.ReminderTable();
+                    AnsiConsole.Write(reminderTable);
                     break;
 
                 case "7. Exit":
@@ -200,11 +204,20 @@ class Program
                     break;
             }
 
-            // Re-prompt the user for their choice to loop back to the main menu
+            // Re-prompt the user for their choice
             choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("What would you like to do?")
-                    .AddChoices(new[] { "1. Add a medicine and dosage.", "2. Add a reminder for a medication.", "3. Remove or edit a medicine and dosage.", "4. View medicines and dosages.", "5. View reminders.", "6. View all information in a table.", "7. Exit" })
+                    .AddChoices(new[] 
+                    { 
+                        "1. Add a medicine and dosage.", 
+                        "2. Add a reminder for a medication.", 
+                        "3. Remove or edit a medicine and dosage.", 
+                        "4. View medicines and dosages.", 
+                        "5. View reminders.", 
+                        "6. View all information in tables.", 
+                        "7. Exit" 
+                    })
             );
         }
     }
