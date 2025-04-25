@@ -185,7 +185,7 @@ class Program
                     break;
 
                 case "6. View all information in tables.":
-                    AnsiConsole.WriteLine("You chose to view all information in a tables.");
+                    AnsiConsole.WriteLine("You chose to view all information in tables.");
                     var tableMaker = new TableMaker(medicineFilePath);
                     var table = tableMaker.CreateTable(); 
                     AnsiConsole.Write(table); 

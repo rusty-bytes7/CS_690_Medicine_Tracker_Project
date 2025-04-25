@@ -18,21 +18,44 @@ namespace Tracker.Tests
             // Check if the medicine was added correctly
             var lines = File.ReadAllLines("test_medicines.csv");
             Assert.Contains("User, Test Medicine, 100mg, Twice a day", lines);
+            Console.WriteLine("Medicine added successfully.");
             // Clean up
             File.Delete("test_medicines.csv");
         }
 
         [Fact]
-        public void RemoveMedicine_ShouldWork()
+        public void RemoveMedicine_ShouldWork() 
         {
-            //this is going to get hung up because it requires user input- change for final version
-        }
+            var tracker = new Tracker("test_medicines.csv");
+            tracker.AddMedicine("User","Test Medicine", "100mg", "Twice a day");
 
-        [Fact]
-        public void EditMedicine_ShouldWork()
-        {
-            //this is going to get hung up because it requires user input- change for final version
+            tracker.RemoveMedicine("Test Medicine");
+
+            //check if the medicine was removed correctly
+            var lines = File.ReadAllLines("test_medicines.csv");
+            Assert.DoesNotContain("User, Test Medicine, 100mg, Twice a day", lines);
+            //clean up
+            File.Delete("test_medicines.csv");
         }
+        
+        [Fact]
+        public void EditMedicine_ShouldWork() 
+        {
+            var name = "User";
+            var tracker = new Tracker("test_medicines.csv");
+            tracker.AddMedicine("User","Medicine 1", "100mg", "Twice a day");
+
+            //edit medicine-this is where the test is failing
+            tracker.EditMedicine(name);
+
+            //check if the medicine was edited correctly
+            var lines = File.ReadAllLines("test_medicines.csv");
+            Assert.Contains("User, Medicine 2, 200mg, Once a day", lines);
+            //clean up
+            File.Delete("test_medicines.csv");
+        }
+        
+            
 
         [Fact]
         public void AddReminder_ShouldWork()
@@ -45,6 +68,7 @@ namespace Tracker.Tests
             //check that reminder was added
             var lines = File.ReadAllLines("reminderlist.csv");
             Assert.Contains("Test Medicine, 1200", lines);
+            Console.WriteLine("Reminder added successfully.");
             //clean up
             File.Delete("reminderlist.csv");
         }
@@ -63,6 +87,10 @@ namespace Tracker.Tests
             var table = tableMaker.CreateTable();
             //check if the table was created
             Assert.NotNull(table);
+            Console.WriteLine("Table created successfully.");
+
+            //delete the test file
+            File.Delete("test_medicines.csv");
         }
         
 

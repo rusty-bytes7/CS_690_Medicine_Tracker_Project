@@ -22,7 +22,8 @@ public class Tracker
         }
     }
 
-    // Method to remove a medication from the file
+    //method to remove a medication from the file
+
     public void RemoveMedicine(string name)
     {
         if (!File.Exists(_filePath))
@@ -31,9 +32,19 @@ public class Tracker
         }
         else
         {
-            var remove_medicine_name = AnsiConsole.Prompt(
-                new TextPrompt<string>("Please enter the name of the medication you want to remove: ")
-            ).ToLower();
+            bool isTest = false; //declare and initialize isTest-CHANGE THIS TO TRUE FOR TESTING
+            string remove_medicine_name;
+
+            if (isTest)
+            {
+                remove_medicine_name = "Test Medicine";
+            }
+            else
+            {
+                remove_medicine_name = AnsiConsole.Prompt(
+                    new TextPrompt<string>("Please enter the name of the medication you want to remove: ")
+                ).ToLower();
+            }
 
             var lines = File.ReadAllLines(_filePath);
             using (StreamWriter textfile = new StreamWriter(_filePath))
@@ -47,48 +58,78 @@ public class Tracker
                 }
             }
             AnsiConsole.WriteLine($"Medicine {remove_medicine_name} has been removed.");
+            
+            
         }
     }
 
-    // Method to edit a medication in the file
+    //method to edit a medication in the file
     public void EditMedicine(string name)
     {
         if (!File.Exists(_filePath))
         {
             AnsiConsole.WriteLine("No medicines found to edit.");
         }
-        else
+        else //file exists
         {
-            var edit_medicine_name = AnsiConsole.Prompt(
-                new TextPrompt<string>("Please enter the name of the medication you want to edit: ")
-            ).ToLower();
+            bool isTest = false; //declare and initialize isTest- CHANGE THIS TO TRUE FOR TESTING
+            string editMedicineName;
+
+            if (isTest) //hardcoded test medicine name
+            {
+                editMedicineName = "Medicine 1";
+
+            }
+            else //if not a test, prompt user for medicine name
+            {
+                editMedicineName = AnsiConsole.Prompt(
+                    new TextPrompt<string>("Please enter the name of the medication you want to edit: ")
+                ).ToLower();
+            }
 
             var lines = File.ReadAllLines(_filePath);
-            using (StreamWriter textfile = new StreamWriter(_filePath))
+            using (StreamWriter textfile =new StreamWriter(_filePath))
             {
                 foreach (var line in lines)
                 {
-                    if (!line.Contains(edit_medicine_name))
+                    if (!line.Contains(editMedicineName)) //if line not found, write line
                     {
                         textfile.WriteLine(line);
                     }
-                    else
+                    else //if line found, prompt user for new medicine name, dosage and frequency
                     {
-                        var new_medicine_name = AnsiConsole.Prompt(
-                            new TextPrompt<string>("Please enter the new name of the medication: ")
-                        ).ToLower();
-                        var new_dosage = AnsiConsole.Prompt(
-                            new TextPrompt<string>("Please enter the new dosage of the medication: ")
-                        ).ToLower();
-                        var new_frequency = AnsiConsole.Prompt(
-                            new TextPrompt<string>("Please enter the new frequency of the medication: ")
-                        ).ToLower();
+                        string newMedicineName;
+                        string newDosage;
+                        string newFrequency;
 
-                        textfile.WriteLine($"{name}, {new_medicine_name}, {new_dosage}, {new_frequency}");
+                        if (isTest) //hardcoded test medicine name if a test
+                        {
+                            //hardcoded test medicine name
+                            AnsiConsole.WriteLine("Editing Test Medicine...");
+                            //hardcoded test medicine details
+                            newMedicineName = "Medicine 2";
+                            newDosage = "200mg";
+                            newFrequency = "Once a day";
+                        }
+                        else
+                        {
+                            newMedicineName = AnsiConsole.Prompt(
+                                new TextPrompt<string>("Please enter the new name of the medication: ")
+                            ).ToLower();
+                            newDosage = AnsiConsole.Prompt(
+                                new TextPrompt<string>("Please enter the new dosage of the medication: ")
+                            ).ToLower();
+                            newFrequency = AnsiConsole.Prompt(
+                                new TextPrompt<string>("Please enter the new frequency of the medication: ")
+                            ).ToLower();
+                        }
+
+                        textfile.WriteLine($"{name}, {newMedicineName}, {newDosage}, {newFrequency}");
+                        
                     }
                 }
             }
-            AnsiConsole.WriteLine($"Medicine {edit_medicine_name} has been edited.");
+            AnsiConsole.WriteLine($"Medicine {editMedicineName} has been edited.");
         }
     }
 
@@ -104,11 +145,12 @@ public class Tracker
     // Method to view all medicines
     public void ViewMedicines()
     {
+        AnsiConsole.MarkupLine("[bold magenta]Medicines:[/]");
         if (File.Exists(_filePath))
         {
             var lines = File.ReadAllLines(_filePath);
             //if file is blank display blank
-            if (lines.Length == 0)
+            if (lines.Length == 1)
             {
                 AnsiConsole.WriteLine("No medicines found.");
                 return;
@@ -122,5 +164,6 @@ public class Tracker
         {
             Console.WriteLine("No medicines found.");
         }
+        AnsiConsole.WriteLine("\n");
     }
 }
