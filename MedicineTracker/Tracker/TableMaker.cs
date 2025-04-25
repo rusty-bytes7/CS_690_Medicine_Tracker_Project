@@ -20,10 +20,15 @@ public class TableMaker
         table.AddColumn("[bold yellow]Dosage[/]");
         table.AddColumn("[bold green]Frequency[/]");
 
-        // Check if the file exists
+        //check if the file exists
         if (File.Exists(_filePath))
         {
             var lines = File.ReadAllLines(_filePath);
+            if (lines.Length == 1)
+            {
+                //if the file is empty, add a row indicating no data found
+                table.AddRow("No data found.", "", "", "");
+            }
 
             //skip the header row and add each line as a row in the table
             foreach (var line in lines.Skip(1))
@@ -32,11 +37,7 @@ public class TableMaker
                 table.AddRow(columns); // Add the columns as a row in the table
             }
         }
-        else
-        {
-            
-            table.AddRow("No data found", "", "", "", "");
-        }
+        
 
         return table; //Return the populated table
     }
@@ -56,14 +57,14 @@ public class TableMaker
             //skip the header row and add each line as a row in the table
             foreach (var line in lines.Skip(1))
             {
-                var columns = line.Split(','); // Split the line into columns
-                table.AddRow(columns); // Add the columns as a row in the table
+                var columns = line.Split(','); //split the line into columns
+                table.AddRow(columns); //add the columns as a row in the table
             }
         }
         else
         {
             
-            table.AddRow("No data found", "", "", "", "");
+            table.AddRow("No data found.", "");
         }
 
         return table; //Return the populated table

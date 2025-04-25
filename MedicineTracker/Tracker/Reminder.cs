@@ -43,11 +43,12 @@ public class Reminder{
                 AnsiConsole.WriteLine("No reminders found.");
                 return;
             }
-                        AnsiConsole.WriteLine("Reminders:");
+                        AnsiConsole.MarkupLine("[bold cyan2]Reminders:[/]");
                         foreach (var line in lines)
                         {
                             AnsiConsole.WriteLine(line);
                         }
+                        AnsiConsole.WriteLine("\n");
                     }
                     else
                     {
